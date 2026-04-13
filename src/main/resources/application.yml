@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: utility-billing-engine
+
+  datasource:
+    url: jdbc:h2:mem:billingdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: BILLING
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false  # don't auto-run batch jobs on startup
+
+  security:
+    user:
+      name: admin
+      password: admin123
+      roles: ADMIN,BILLING_ANALYST
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,batch
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.utility.billing: DEBUG
+    org.springframework.batch: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: oracle
+
+  datasource:
+    url: ${DB_URL:jdbc:oracle:thin:@localhost:1521/BILLINGDB}
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: ${DB_USERNAME:billing_user}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
